@@ -3,5 +3,9 @@
   "extends": [
     "config:recommended",
     ":disableDependencyDashboard"
+  ],
+  "enabledManagers": [
+    "dockerfile",
+    "github-actions"
   ]
 }
