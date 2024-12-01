@@ -9,8 +9,8 @@ class Day01Suite extends ScalaCheckSuite:
       Input.parse(smallInput),
       Some(
         Input(
-          left = List(3, 4, 2, 1, 3, 3).map(LocationId(_)),
-          right = List(4, 3, 5, 3, 9, 3).map(LocationId(_))
+          left = List(3, 4, 2, 1, 3, 3).map(LocationId.apply),
+          right = List(4, 3, 5, 3, 9, 3).map(LocationId.apply)
         )
       )
     )
@@ -20,6 +20,12 @@ class Day01Suite extends ScalaCheckSuite:
 
   test("total distance for big input is 1_223_326"):
     assertEquals(totalDistance(bigInput), Some(1_223_326L))
+
+  test("similarity score for small input is 31"):
+    assertEquals(similarityScore(smallInput), Some(31L))
+
+  test("similarity score for big input is 21_070_419"):
+    assertEquals(similarityScore(bigInput), Some(21_070_419L))
 
 object Day01Suite:
 
