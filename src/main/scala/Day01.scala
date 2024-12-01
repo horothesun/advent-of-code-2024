@@ -9,11 +9,11 @@ object Day01:
 
   case class Input(left: List[LocationId], right: List[LocationId]):
 
-    def totalDistance: Long = left.sorted.zip(right.sorted).map((l, r) => Math.abs(l.value - r.value).toLong).sum
+    def totalDistance: Long = left.sorted.zip(right.sorted).foldMap((l, r) => Math.abs(l.value - r.value).toLong)
 
     def similarityScore: Long =
       val rightCount = right.groupBy(identity).map((k, vs) => (k, vs.length))
-      left.map(l => (l.value * rightCount.getOrElse(l, 0)).toLong).sum
+      left.foldMap(l => (l.value * rightCount.getOrElse(l, 0)).toLong)
 
   object Input:
     def parse(inputs: List[String]): Option[Input] =
@@ -22,10 +22,8 @@ object Day01:
           case Array(l, r) => (l.toIntOption, r.toIntOption).tupled
           case _           => None
       }.map { lrs =>
-        Input(
-          left = lrs.map(_._1).map(LocationId.apply),
-          right = lrs.map(_._2).map(LocationId.apply)
-        )
+        val (l, r) = lrs.unzip
+        Input(left = l.map(LocationId.apply), right = r.map(LocationId.apply))
       }
 
   def totalDistance(inputs: List[String]): Option[Long] = Input.parse(inputs).map(_.totalDistance)
