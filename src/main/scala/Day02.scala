@@ -1,6 +1,7 @@
 import Day02.Safety.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
+import fs2.Stream
 
 object Day02:
 
@@ -19,20 +20,41 @@ object Day02:
 
   case class Report(levels: NonEmptyList[Level]):
 
-    def isAllIncreasing: Boolean = levels.toList == levels.toList.sorted
-    def isAllDecreasing: Boolean = levels.toList == levels.toList.sorted.reverse
-    def areAllDeltasBetween1And3: Boolean =
-      levels.toList.zip(levels.tail).forall((l, r) => l.differsFrom(min = 1, max = 3)(r))
+    def safety: Safety = Report.safety(levels.toList)
 
-    def safety: Safety = if ((isAllIncreasing || isAllDecreasing) && areAllDeltasBetween1And3) Safe else Unsafe
+    def safetyWithProblemDampener: Safety =
+      Stream
+        .range(start = -1, stopExclusive = levels.length)
+        .map(elementAt => Report.safety(levels.removed(elementAt)))
+        .collectFirst[Safety] { case s @ Safe => s }
+        .toList
+        .headOption
+        .getOrElse(Unsafe)
 
   object Report:
+
     def parse(s: String): Option[Report] = s.split(' ').toList.traverse(Level.parse).flatMap(_.toNel.map(Report.apply))
+
+    def isAllIncreasing(ls: List[Level]): Boolean = ls == ls.sorted
+    def isAllDecreasing(ls: List[Level]): Boolean = ls == ls.sorted.reverse
+    def areAllDeltasBetween1And3(ls: List[Level]): Boolean = ls match
+      case Nil | _ :: Nil => true
+      case _ :: tail      => ls.zip(tail).forall((l, r) => l.differsFrom(min = 1, max = 3)(r))
+
+    def safety(ls: List[Level]): Safety =
+      if ((isAllIncreasing(ls) || isAllDecreasing(ls)) && areAllDeltasBetween1And3(ls)) Safe else Unsafe
+
+  extension [A](nel: NonEmptyList[A])
+    def removed(elementAt: Int): List[A] =
+      val as = nel.toList
+      if (elementAt < 0 || nel.length <= elementAt) as
+      else // 0 <= idx && idx < nel.length
+        as.take(elementAt) ++ as.drop(1 + elementAt)
 
   def parse(input: List[String]): Option[List[Report]] = input.traverse(Report.parse)
 
   def safetyCount(input: List[String]): Option[Int] =
-    parse(input).map(_.foldMap(_.safety match
-      case Safe   => 1
-      case Unsafe => 0
-    ))
+    parse(input).map(_.map(_.safety).collect { case s @ Safe => s }.length)
+
+  def safetyWithProblemDampenerCount(input: List[String]): Option[Int] =
+    parse(input).map(_.map(_.safetyWithProblemDampener).collect { case s @ Safe => s }.length)
