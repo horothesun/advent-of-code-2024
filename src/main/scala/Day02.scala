@@ -36,7 +36,7 @@ object Day02:
     def parse(s: String): Option[Report] = s.split(' ').toList.traverse(Level.parse).flatMap(_.toNel.map(Report.apply))
 
     def isAllIncreasing(ls: List[Level]): Boolean = ls == ls.sorted
-    def isAllDecreasing(ls: List[Level]): Boolean = ls == ls.sorted.reverse
+    def isAllDecreasing(ls: List[Level]): Boolean = isAllIncreasing(ls.reverse)
     def areAllDeltasBetween1And3(ls: List[Level]): Boolean = ls match
       case Nil | _ :: Nil => true
       case _ :: tail      => ls.zip(tail).forall((l, r) => l.differsFrom(min = 1, max = 3)(r))
