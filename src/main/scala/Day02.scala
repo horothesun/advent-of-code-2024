@@ -42,12 +42,12 @@ object Day02:
       case _ :: tail      => ls.zip(tail).forall((l, r) => l.differsFrom(min = 1, max = 3)(r))
 
     def safety(ls: List[Level]): Safety =
-      if ((isAllIncreasing(ls) || isAllDecreasing(ls)) && areAllDeltasBetween1And3(ls)) Safe else Unsafe
+      if (isAllIncreasing(ls) || isAllDecreasing(ls)) && areAllDeltasBetween1And3(ls) then Safe else Unsafe
 
   extension [A](nel: NonEmptyList[A])
     def removed(elementAt: Int): List[A] =
       val as = nel.toList
-      if (elementAt < 0 || nel.length <= elementAt) as
+      if elementAt < 0 || nel.length <= elementAt then as
       else // 0 <= idx && idx < nel.length
         as.take(elementAt) ++ as.drop(1 + elementAt)
 
