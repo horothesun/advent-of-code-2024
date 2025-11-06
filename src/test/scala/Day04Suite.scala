@@ -32,13 +32,23 @@ class Day04Suite extends ScalaCheckSuite:
   property("Grid |allPositions| = rows * columns"):
     forAll(nonEmptyGridGen)(neg => assertEquals(neg.allPositions.length, neg.rows.length * neg.rows.head.length))
 
-  test("topLeftPositions example"):
+  test("horizontalPositions example"):
     assertEquals(
       Grid.horizontalPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
       List(
         Pos(row = 2, col = 4),
         Pos(row = 2, col = 5),
         Pos(row = 2, col = 6)
+      )
+    )
+
+  test("verticalPositions example"):
+    assertEquals(
+      Grid.verticalPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
+      List(
+        Pos(row = 2, col = 4),
+        Pos(row = 3, col = 4),
+        Pos(row = 4, col = 4)
       )
     )
 
