@@ -39,8 +39,8 @@ object Day04:
       ....
       ....
      */
-    def topLeftPositions(w: Word)(p: Pos): List[Pos] =
-      List.range(start = p.col, end = p.col + w.length).map(col => Pos(p.row, col))
+    def topLeftPositions(w: Word)(from: Pos): List[Pos] =
+      List.range(start = from.col, end = from.col + w.length).map(col => Pos(from.row, col))
 
     def wordCheckTopLeft(w: Word, store: StoreGrid): WordCheckResult = wordCheck(topLeftPositions, w, store)
 
@@ -50,8 +50,8 @@ object Day04:
       .M..
       X...
      */
-    def ascDiagonalPositions(w: Word)(p: Pos): List[Pos] =
-      List.range(start = 0, end = w.length).reverse.map(i => Pos(row = i + p.row, col = w.length - i - 1 + p.col))
+    def ascDiagonalPositions(w: Word)(from: Pos): List[Pos] =
+      List.range(start = 0, end = w.length).reverse.map(i => Pos(row = i + from.row, col = w.length - i - 1 + from.col))
 
     def wordCheckAscDiagonal(w: Word, store: StoreGrid): WordCheckResult = wordCheck(ascDiagonalPositions, w, store)
 
@@ -61,8 +61,8 @@ object Day04:
       ..A.
       ...S
      */
-    def descDiagonalPositions(w: Word)(p: Pos): List[Pos] =
-      List.range(start = 0, end = w.length).map(i => Pos(row = i + p.row, col = i + p.col))
+    def descDiagonalPositions(w: Word)(from: Pos): List[Pos] =
+      List.range(start = 0, end = w.length).map(i => Pos(row = i + from.row, col = i + from.col))
 
     def wordCheckDescDiagonal(w: Word, store: StoreGrid): WordCheckResult = wordCheck(descDiagonalPositions, w, store)
 

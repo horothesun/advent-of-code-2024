@@ -34,7 +34,7 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("topLeftPositions example"):
     assertEquals(
-      Grid.topLeftPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      Grid.topLeftPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
       List(
         Pos(row = 2, col = 4),
         Pos(row = 2, col = 5),
@@ -44,7 +44,7 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("ascDiagonalPositions example"):
     assertEquals(
-      Grid.ascDiagonalPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      Grid.ascDiagonalPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
       List(
         Pos(row = 4, col = 4),
         Pos(row = 3, col = 5),
@@ -54,7 +54,7 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("descDiagonalPositions example"):
     assertEquals(
-      Grid.descDiagonalPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      Grid.descDiagonalPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
       List(
         Pos(row = 2, col = 4),
         Pos(row = 3, col = 5),
