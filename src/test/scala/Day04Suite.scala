@@ -16,7 +16,7 @@ class Day04Suite extends ScalaCheckSuite:
   test("big input parsed to something"):
     assert(Grid.parse(rows = bigInput).isDefined)
 
-  test("Grid.allPositions example"):
+  test("Grid allPositions example"):
     assertEquals(
       Grid(rows = List(List('a', 'b', 'c'), List('d', 'e', 'f'))).allPositions,
       List(
@@ -31,6 +31,36 @@ class Day04Suite extends ScalaCheckSuite:
 
   property("Grid |allPositions| = rows * columns"):
     forAll(nonEmptyGridGen)(neg => assertEquals(neg.allPositions.length, neg.rows.length * neg.rows.head.length))
+
+  test("topLeftPositions example"):
+    assertEquals(
+      Grid.topLeftPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      List(
+        Pos(row = 2, col = 4),
+        Pos(row = 2, col = 5),
+        Pos(row = 2, col = 6)
+      )
+    )
+
+  test("ascDiagonalPositions example"):
+    assertEquals(
+      Grid.ascDiagonalPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      List(
+        Pos(row = 4, col = 4),
+        Pos(row = 3, col = 5),
+        Pos(row = 2, col = 6)
+      )
+    )
+
+  test("descDiagonalPositions example"):
+    assertEquals(
+      Grid.descDiagonalPositions(Word("XYZ"))(Pos(row = 2, col = 4)),
+      List(
+        Pos(row = 2, col = 4),
+        Pos(row = 3, col = 5),
+        Pos(row = 4, col = 6)
+      )
+    )
 
 object Day04Suite:
 
