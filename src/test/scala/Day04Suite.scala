@@ -34,7 +34,7 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("topLeftPositions example"):
     assertEquals(
-      Grid.topLeftPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
+      Grid.horizontalPositions(Word("XYZ"))(from = Pos(row = 2, col = 4)),
       List(
         Pos(row = 2, col = 4),
         Pos(row = 2, col = 5),
@@ -61,6 +61,24 @@ class Day04Suite extends ScalaCheckSuite:
         Pos(row = 4, col = 6)
       )
     )
+
+  test("small input contains 18 occurrences of \"XMAS\""):
+    val smallInput = List(
+      "MMMSXXMASM",
+      "MSAMXMSMSA",
+      "AMXSXMAAMM",
+      "MSAMASMSMX",
+      "XMASAMXAMM",
+      "XXAMMXXAMA",
+      "SMSMSASXSS",
+      "SAXAMASAAA",
+      "MAMMMXMMMM",
+      "MXMXAXMASX"
+    )
+    assertEquals(Grid.parse(smallInput).map(_.allOccurrences("XMAS")), 18.some)
+
+  test("big input contains 2_578 occurrences of \"XMAS\""):
+    assertEquals(Grid.parse(bigInput).map(_.allOccurrences("XMAS")), 2_578.some)
 
 object Day04Suite:
 
