@@ -29,13 +29,17 @@ object Day04:
     }
 
   object WordCheckResult:
-    def from(b: Boolean): WordCheckResult = if b then Found else NotFound
+    def from(isFound: Boolean): WordCheckResult = if isFound then Found else NotFound
 
   case class Grid(rows: List[List[Char]]):
 
     val toVectors: Vector[Vector[Char]] = rows.map(_.toVector).toVector
 
-    val toStore: GridStore = Store(p => toVectors.get(p.row).flatMap(_.get(p.col)), s = Pos.zero)
+    val toStore: GridStore =
+      Store(
+        p => toVectors.get(p.row).flatMap(_.get(p.col)),
+        s = Pos.zero
+      )
 
     val allPositions: List[Pos] =
       rows.zipWithIndex.flatMap((row, rowIndex) => row.zipWithIndex.map((_, colIndex) => Pos(rowIndex, colIndex)))
@@ -67,44 +71,44 @@ object Day04:
         verticalPositions,
         ascDiagonalPositions,
         descDiagonalPositions
-      ).map(wordCheck(_, w, store))
+      ).map(positions => wordCheck(positions(w.length), w, store))
 
-    def wordCheck(positions: Word => Pos => List[Pos], w: Word, store: GridStore): WordCheckResult =
-      WordCheckResult.from(w.toOptionalChars == store.experiment(positions(w)))
+    def wordCheck(positions: Pos => List[Pos], w: Word, store: GridStore): WordCheckResult =
+      WordCheckResult.from(isFound = w.toOptionalChars == store.experiment(positions))
 
     /* XMAS
        ....
        ....
        .... */
-    def horizontalPositions(w: Word)(from: Pos): List[Pos] =
-      List.range(start = from.col, end = from.col + w.length).map(col => Pos(from.row, col))
+    def horizontalPositions(wordLength: Int)(from: Pos): List[Pos] =
+      List.range(from.col, from.col + wordLength).map(col => Pos(from.row, col))
 
     /* X...
        M...
        A...
        S... */
-    def verticalPositions(w: Word)(from: Pos): List[Pos] =
-      List.range(start = from.row, end = from.row + w.length).map(row => Pos(row, from.col))
+    def verticalPositions(wordLength: Int)(from: Pos): List[Pos] =
+      List.range(from.row, from.row + wordLength).map(row => Pos(row, from.col))
 
     /* ...S
        ..A.
        .M..
        X... */
-    def ascDiagonalPositions(w: Word)(from: Pos): List[Pos] =
-      List.range(start = 0, end = w.length).reverse.map(i => Pos(row = i + from.row, col = w.length - i - 1 + from.col))
+    def ascDiagonalPositions(wordLength: Int)(from: Pos): List[Pos] =
+      List.range(0, wordLength).reverse.map(i => Pos(row = i + from.row, col = wordLength - i - 1 + from.col))
 
     /* X...
        .M..
        ..A.
        ...S */
-    def descDiagonalPositions(w: Word)(from: Pos): List[Pos] =
-      List.range(start = 0, end = w.length).map(i => Pos(row = i + from.row, col = i + from.col))
+    def descDiagonalPositions(wordLength: Int)(from: Pos): List[Pos] =
+      List.range(0, wordLength).map(i => Pos(row = i + from.row, col = i + from.col))
 
     // part 2
     def crossWordCheck(w: Word, store: GridStore): WordCheckResult =
-      def ascDiagonalCheck: Word => Boolean = wordCheck(ascDiagonalPositions, _, store).toBoolean
-      def descDiagonalCheck: Word => Boolean = wordCheck(descDiagonalPositions, _, store).toBoolean
-      WordCheckResult.from(
-        (ascDiagonalCheck(w) || ascDiagonalCheck(w.reverse)) &&
-          (descDiagonalCheck(w) || descDiagonalCheck(w.reverse))
+      def isAscDiagonalFound: Word => Boolean = wordCheck(ascDiagonalPositions(w.length), _, store).toBoolean
+      def isDescDiagonalFound: Word => Boolean = wordCheck(descDiagonalPositions(w.length), _, store).toBoolean
+      WordCheckResult.from(isFound =
+        (isAscDiagonalFound(w) || isAscDiagonalFound(w.reverse)) &&
+          (isDescDiagonalFound(w) || isDescDiagonalFound(w.reverse))
       )
