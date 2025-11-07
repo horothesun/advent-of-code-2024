@@ -9,8 +9,18 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("small input parsed correctly"):
     assertEquals(
-      Grid.parse(rows = List("abc", "def")),
-      Grid(rows = List(List('a', 'b', 'c'), List('d', 'e', 'f'))).some
+      Grid.parse(
+        rows = List(
+          "abc",
+          "def"
+        )
+      ),
+      Grid(
+        rows = List(
+          List('a', 'b', 'c'),
+          List('d', 'e', 'f')
+        )
+      ).some
     )
 
   test("big input parsed to something"):
@@ -18,7 +28,12 @@ class Day04Suite extends ScalaCheckSuite:
 
   test("Grid allPositions example"):
     assertEquals(
-      Grid(rows = List(List('a', 'b', 'c'), List('d', 'e', 'f'))).allPositions,
+      Grid(
+        rows = List(
+          List('a', 'b', 'c'),
+          List('d', 'e', 'f')
+        )
+      ).allPositions,
       List(
         Pos(row = 0, col = 0),
         Pos(row = 0, col = 1),
@@ -72,27 +87,36 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  test("small input contains 18 occurrences of \"XMAS\""):
-    val smallInput = List(
-      "MMMSXXMASM",
-      "MSAMXMSMSA",
-      "AMXSXMAAMM",
-      "MSAMASMSMX",
-      "XMASAMXAMM",
-      "XXAMMXXAMA",
-      "SMSMSASXSS",
-      "SAXAMASAAA",
-      "MAMMMXMMMM",
-      "MXMXAXMASX"
-    )
+  test("small input contains 18 \"XMAS\" occurrences"):
     assertEquals(Grid.parse(smallInput).map(_.allOccurrences("XMAS")), 18.some)
 
-  test("big input contains 2_578 occurrences of \"XMAS\""):
+  test("big input contains 2_578 \"XMAS\" occurrences"):
     assertEquals(Grid.parse(bigInput).map(_.allOccurrences("XMAS")), 2_578.some)
+
+  // part 2
+
+  test("small input contains 9 cross-\"MAS\" occurrences"):
+    assertEquals(Grid.parse(smallInput).map(_.allCrossOccurrences("MAS")), 9.some)
+
+  test("big input contains 1_972 cross-\"MAS\" occurrences"):
+    assertEquals(Grid.parse(bigInput).map(_.allCrossOccurrences("MAS")), 1_972.some)
 
 object Day04Suite:
 
   val bigInput: List[String] = getLinesFromFile("src/test/scala/day04_input.txt")
+
+  val smallInput = List(
+    "MMMSXXMASM",
+    "MSAMXMSMSA",
+    "AMXSXMAAMM",
+    "MSAMASMSMX",
+    "XMASAMXAMM",
+    "XXAMMXXAMA",
+    "SMSMSASXSS",
+    "SAXAMASAAA",
+    "MAMMMXMMMM",
+    "MXMXAXMASX"
+  )
 
   val nonEmptyGridGen: Gen[Grid] = Gen.zip(Gen.choose(1, 10), Gen.choose(1, 10)).flatMap { (r, c) =>
     Gen.listOfN(r, Gen.listOfN(c, Gen.alphaUpperChar)).map(Grid.apply)
