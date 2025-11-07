@@ -26,7 +26,7 @@ class Day04Suite extends ScalaCheckSuite:
   test("big input parsed to something"):
     assert(Grid.parse(rows = bigInput).isDefined)
 
-  test("Grid allPositions example"):
+  test("Grid all positions example"):
     assertEquals(
       Grid(
         rows = List(
@@ -44,10 +44,10 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  property("Grid |allPositions| = rows * columns"):
+  property("Grid # all positions is rows * columns"):
     forAll(nonEmptyGridGen)(neg => assertEquals(neg.allPositions.length, neg.rows.length * neg.rows.head.length))
 
-  test("horizontalPositions example"):
+  test("horizontal positions example"):
     assertEquals(
       Grid.horizontalPositions(wordLength = 3)(from = Pos(row = 2, col = 4)),
       List(
@@ -57,7 +57,7 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  test("verticalPositions example"):
+  test("vertical positions example"):
     assertEquals(
       Grid.verticalPositions(wordLength = 3)(from = Pos(row = 2, col = 4)),
       List(
@@ -67,7 +67,7 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  test("ascDiagonalPositions example"):
+  test("ascending diagonal positions example"):
     assertEquals(
       Grid.ascDiagonalPositions(wordLength = 3)(from = Pos(row = 2, col = 4)),
       List(
@@ -77,7 +77,7 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  test("descDiagonalPositions example"):
+  test("descending diagonal positions example"):
     assertEquals(
       Grid.descDiagonalPositions(wordLength = 3)(from = Pos(row = 2, col = 4)),
       List(
@@ -87,18 +87,18 @@ class Day04Suite extends ScalaCheckSuite:
       )
     )
 
-  test("small input contains 18 \"XMAS\" occurrences"):
+  test("small input contains 18 XMAS occurrences"):
     assertEquals(Grid.parse(smallInput).map(_.allOccurrences("XMAS")), 18.some)
 
-  test("big input contains 2_578 \"XMAS\" occurrences"):
+  test("big input contains 2_578 XMAS occurrences"):
     assertEquals(Grid.parse(bigInput).map(_.allOccurrences("XMAS")), 2_578.some)
 
   // part 2
 
-  test("small input contains 9 cross-\"MAS\" occurrences"):
+  test("small input contains 9 X-MAS occurrences"):
     assertEquals(Grid.parse(smallInput).map(_.allCrossOccurrences("MAS")), 9.some)
 
-  test("big input contains 1_972 cross-\"MAS\" occurrences"):
+  test("big input contains 1_972 X-MAS occurrences"):
     assertEquals(Grid.parse(bigInput).map(_.allCrossOccurrences("MAS")), 1_972.some)
 
 object Day04Suite:
