@@ -14,7 +14,7 @@ object Day04:
   object Pos:
     val zero = Pos(row = 0, col = 0)
 
-  type StoreGrid = Store[Pos, Option[Char]]
+  type GridStore = Store[Pos, Option[Char]]
 
   enum WordCheckResult:
     case Found, NotFound
@@ -35,7 +35,7 @@ object Day04:
 
     val toVectors: Vector[Vector[Char]] = rows.map(_.toVector).toVector
 
-    val toStore: StoreGrid = Store(p => toVectors.get(p.row).flatMap(_.get(p.col)), s = Pos.zero)
+    val toStore: GridStore = Store(p => toVectors.get(p.row).flatMap(_.get(p.col)), s = Pos.zero)
 
     val allPositions: List[Pos] =
       rows.zipWithIndex.flatMap((row, rowIndex) => row.zipWithIndex.map((_, colIndex) => Pos(rowIndex, colIndex)))
@@ -61,7 +61,7 @@ object Day04:
 
     def parse(rows: List[String]): Option[Grid] = Grid(rows = rows.map(_.toList)).some
 
-    def wordChecks(w: Word, store: StoreGrid): List[WordCheckResult] =
+    def wordChecks(w: Word, store: GridStore): List[WordCheckResult] =
       List(
         horizontalPositions,
         verticalPositions,
@@ -69,7 +69,7 @@ object Day04:
         descDiagonalPositions
       ).map(wordCheck(_, w, store))
 
-    def wordCheck(positions: Word => Pos => List[Pos], w: Word, store: StoreGrid): WordCheckResult =
+    def wordCheck(positions: Word => Pos => List[Pos], w: Word, store: GridStore): WordCheckResult =
       WordCheckResult.from(w.toOptionalChars == store.experiment(positions(w)))
 
     /* XMAS
@@ -101,7 +101,7 @@ object Day04:
       List.range(start = 0, end = w.length).map(i => Pos(row = i + from.row, col = i + from.col))
 
     // part 2
-    def crossWordCheck(w: Word, store: StoreGrid): WordCheckResult =
+    def crossWordCheck(w: Word, store: GridStore): WordCheckResult =
       def ascDiagonalCheck: Word => Boolean = wordCheck(ascDiagonalPositions, _, store).toBoolean
       def descDiagonalCheck: Word => Boolean = wordCheck(descDiagonalPositions, _, store).toBoolean
       WordCheckResult.from(
