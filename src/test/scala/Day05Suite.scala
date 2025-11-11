@@ -46,49 +46,63 @@ class Day05Suite extends ScalaCheckSuite:
       Page(1)
     )
 
-  test("first violated order rule for small input's first update is None"):
+  test("first violated order rule for small input's 1st update is None"):
     assertEquals(
-      Input.parse(smallInput).flatMap(input => input.updates.head.firstViolatedOrderRules(input.rules)),
+      for {
+        input <- Input.parse(smallInput)
+        firstPage = input.updates.head
+        orderRule <- firstPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       None
     )
 
-  test("first violated order rule for small input's second update is None"):
+  test("first violated order rule for small input's 2nd update is None"):
     assertEquals(
-      Input
-        .parse(smallInput)
-        .flatMap(input => input.updates.toNev.get(1).flatMap(_.firstViolatedOrderRules(input.rules))),
+      for {
+        input <- Input.parse(smallInput)
+        secondPage <- input.updates.toNev.get(1)
+        orderRule <- secondPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       None
     )
 
-  test("first violated order rule for small input's third update is None"):
+  test("first violated order rule for small input's 3rd update is None"):
     assertEquals(
-      Input
-        .parse(smallInput)
-        .flatMap(input => input.updates.toNev.get(2).flatMap(_.firstViolatedOrderRules(input.rules))),
+      for {
+        input <- Input.parse(smallInput)
+        thirdPage <- input.updates.toNev.get(2)
+        orderRule <- thirdPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       None
     )
 
-  test("first violated order rule for small input's fourth update is 97|75"):
+  test("first violated order rule for small input's 4th update is 97|75"):
     assertEquals(
-      Input
-        .parse(smallInput)
-        .flatMap(input => input.updates.toNev.get(3).flatMap(_.firstViolatedOrderRules(input.rules))),
+      for {
+        input <- Input.parse(smallInput)
+        fourthPage <- input.updates.toNev.get(3)
+        orderRule <- fourthPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       OrderRule(before = Page(97), after = Page(75)).some
     )
 
-  test("first violated order rule for small input's fifth update is 29|13"):
+  test("first violated order rule for small input's 5th update is 29|13"):
     assertEquals(
-      Input
-        .parse(smallInput)
-        .flatMap(input => input.updates.toNev.get(4).flatMap(_.firstViolatedOrderRules(input.rules))),
+      for {
+        input <- Input.parse(smallInput)
+        fifthPage <- input.updates.toNev.get(4)
+        orderRule <- fifthPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       OrderRule(before = Page(29), after = Page(13)).some
     )
 
-  test("first violated order rule for small input's sixth update is 75|13"):
+  test("first violated order rule for small input's 6th update is 75|13"):
     assertEquals(
-      Input
-        .parse(smallInput)
-        .flatMap(input => input.updates.toNev.get(5).flatMap(_.firstViolatedOrderRules(input.rules))),
+      for {
+        input <- Input.parse(smallInput)
+        sixthPage <- input.updates.toNev.get(5)
+        orderRule <- sixthPage.firstViolatedOrderRules(input.rules)
+      } yield orderRule,
       OrderRule(before = Page(75), after = Page(13)).some
     )
 

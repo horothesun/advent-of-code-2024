@@ -5,7 +5,7 @@ import cats.syntax.all.*
 
 object Day05:
 
-  case class Page(n: Int)
+  case class Page(n: Int) derives Eq
 
   object Page:
     def parse(s: String): Option[Page] = s.toIntOption.map(Page.apply)
@@ -38,9 +38,13 @@ object Day05:
       as.reverse.foldLeft(List(List.empty[A]))((l, a) => if a == sep then List.empty :: l else (a :: l.head) :: l.tail)
 
   case class Input(rules: NonEmptyList[OrderRule], updates: NonEmptyList[Update]):
+
+    def filteredRules(update: Update): List[OrderRule] =
+      rules.filter(r => update.pages.contains_(r.before) && update.pages.contains_(r.after))
+
     def correctlyOrderedUpdatesMiddlePageSum: Int =
       updates
-        .collect(u => u.firstViolatedOrderRules(rules) match { case None => u })
+        .collect(u => filteredRules(u).toNel.flatMap(u.firstViolatedOrderRules) match { case None => u })
         .foldMap(_.middlePage.n)
 
   object Input:
