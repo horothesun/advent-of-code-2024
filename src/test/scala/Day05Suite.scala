@@ -118,6 +118,20 @@ class Day05Suite extends ScalaCheckSuite:
       5_064.some
     )
 
+  // part 2
+
+  test("small input incorrectly ordered updates middle page sum is 123"):
+    assertEquals(
+      Input.parse(smallInput).map(_.fixedIncorrectlyOrderedUpdatesMiddlePageSum),
+      123.some
+    )
+
+  test("big input incorrectly ordered updates middle page sum is 5_152"):
+    assertEquals(
+      Input.parse(bigInput).map(_.fixedIncorrectlyOrderedUpdatesMiddlePageSum),
+      5_152.some
+    )
+
 object Day05Suite:
 
   val bigInput: List[String] = getLinesFromFile("src/test/scala/day05_input.txt")
