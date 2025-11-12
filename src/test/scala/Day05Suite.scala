@@ -50,8 +50,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        firstPage = input.updates.head
-        orderRule <- firstPage.firstViolatedOrderRules(input.rules)
+        firstUpdate = input.updates.head
+        orderRule <- firstUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       None
     )
@@ -60,8 +60,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        secondPage <- input.updates.toNev.get(1)
-        orderRule <- secondPage.firstViolatedOrderRules(input.rules)
+        secondUpdate <- input.updates.toNev.get(1)
+        orderRule <- secondUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       None
     )
@@ -70,8 +70,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        thirdPage <- input.updates.toNev.get(2)
-        orderRule <- thirdPage.firstViolatedOrderRules(input.rules)
+        thirdUpdate <- input.updates.toNev.get(2)
+        orderRule <- thirdUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       None
     )
@@ -80,8 +80,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        fourthPage <- input.updates.toNev.get(3)
-        orderRule <- fourthPage.firstViolatedOrderRules(input.rules)
+        fourthUpdate <- input.updates.toNev.get(3)
+        orderRule <- fourthUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       OrderRule(before = Page(97), after = Page(75)).some
     )
@@ -90,8 +90,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        fifthPage <- input.updates.toNev.get(4)
-        orderRule <- fifthPage.firstViolatedOrderRules(input.rules)
+        fifthUpdate <- input.updates.toNev.get(4)
+        orderRule <- fifthUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       OrderRule(before = Page(29), after = Page(13)).some
     )
@@ -100,8 +100,8 @@ class Day05Suite extends ScalaCheckSuite:
     assertEquals(
       for {
         input <- Input.parse(smallInput)
-        sixthPage <- input.updates.toNev.get(5)
-        orderRule <- sixthPage.firstViolatedOrderRules(input.rules)
+        sixthUpdate <- input.updates.toNev.get(5)
+        orderRule <- sixthUpdate.firstViolatedOrderRules(input.rules)
       } yield orderRule,
       OrderRule(before = Page(75), after = Page(13)).some
     )
