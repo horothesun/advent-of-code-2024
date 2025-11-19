@@ -115,10 +115,10 @@ object Day06:
 
     def parse(rows: List[String]): Option[Lab] = for {
       cells <- rows.traverse(_.toList.traverse(Cell.parse))
-      (guardPos, direction) <- findGuard(cells)
-    } yield Lab(cells, Guard(guardPos, direction))
+      guard <- findGuard(cells)
+    } yield Lab(cells, guard)
 
-    def findGuard(cells: List[List[Cell]]): Option[(Pos, Direction)] =
+    def findGuard(cells: List[List[Cell]]): Option[Guard] =
       cells.zipWithIndex
         .map((row, rowIndex) => row.zipWithIndex.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
-        .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => (pos, direction) })
+        .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => Guard(pos, direction) })
