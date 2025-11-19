@@ -1,7 +1,6 @@
 import Day06.Cell.*
 import Day06.Direction.*
 import cats.data.Store
-import cats.derived.*
 import cats.syntax.all.*
 
 object Day06:
@@ -13,7 +12,7 @@ object Day06:
     def right: Pos = Pos(row, col + 1)
     def down: Pos = Pos(row + 1, col)
 
-    def next(dir: Direction): Pos = dir match {
+    def next(direction: Direction): Pos = direction match {
       case Left  => left
       case Up    => up
       case Right => right
@@ -42,19 +41,53 @@ object Day06:
   enum Tile:
     case Empty, Obstruction
 
+  object Tile:
+    def parse(c: Char): Option[Tile] = c match {
+      case '.' => Empty.some
+      case '#' => Obstruction.some
+      case _   => None
+    }
+
   enum Cell:
     case TileCell(tile: Tile)
     case GuardCell(direction: Direction)
 
-  type LabWithNoGuardStore = Store[Pos, Option[Tile]]
+    def toTile: Tile = this match {
+      case TileCell(tile) => tile
+      case GuardCell(_)   => Tile.Empty
+    }
+
+  object Cell:
+    def parse(c: Char): Option[Cell] =
+      Tile.parse(c).map(TileCell.apply).orElse(Direction.parse(c).map(GuardCell.apply))
 
   type LabStore = Store[Pos, Option[(Tile, Guard)]]
 
-  def extractGuard(store: LabStore): Option[Guard] = store.extract.map(_._2)
+  val unguardedLabStore: LabStore = {
+    val outOfBoundsPos = Pos(row = -1, col = -1)
+    Store(
+      {
+        case Pos(row = 0, col = 0) => (Tile.Empty, Guard(outOfBoundsPos, Direction.Left)).some
+        case _                     => None
+      },
+      s = outOfBoundsPos
+    )
+  }
+
+  extension (store: LabStore)
+
+    def getGuard: Option[Guard] = store.extract.map(_._2)
+
+    def afterGuardStep: LabStore =
+      (for {
+        oldGuard <- store.getGuard
+        newGuard <- oldGuard.afterStep(store)
+        newStore = store.seek(newGuard.pos).map(_.map((tile, _) => (tile, newGuard)))
+      } yield newStore).getOrElse(unguardedLabStore)
 
   case class Guard(pos: Pos, direction: Direction):
 
-    def updated(store: LabStore): Option[Guard] =
+    def afterStep(store: LabStore): Option[Guard] =
       val nextPos = pos.next(direction)
       store
         .peek(nextPos)
@@ -67,36 +100,28 @@ object Day06:
 
     val toVectors: Vector[Vector[Cell]] = cells.map(_.toVector).toVector
 
-    val outOfBoundsPos: Pos = Pos(row = -1, col = -1)
-
-    val toStoreWithNoGuard: LabWithNoGuardStore =
+    val toStore: LabStore =
       Store(
-        p =>
-          toVectors
-            .get(p.row)
-            .flatMap(_.get(p.col).map {
-              case TileCell(tile) => tile
-              case GuardCell(_)   => Tile.Empty
-            }),
+        p => toVectors.get(p.row).flatMap(_.get(p.col).map(_.toTile)).map((_, guard)),
         s = guard.pos
       )
 
-    def withGuard(store: LabWithNoGuardStore): LabStore = store.map(_.map((_, guard)))
-
-    def step(store: LabStore): LabStore =
-      extractGuard(store).fold(ifEmpty = store) { oldGuard =>
-        oldGuard
-          .updated(store)
-          .map(newGuard => store.seek(newGuard.pos).map(_.map((tile, _) => (tile, newGuard))))
-          .getOrElse(store.seek(outOfBoundsPos)) // TODO: improve! 🔥🔥🔥
-      }
-
-    def allDistinctGuardPositions(store: LabWithNoGuardStore): List[Pos] =
+    def allDistinctGuardPositionsCount: Int =
       List
-        .unfold(init = withGuard(store))(currentStore =>
-          extractGuard(currentStore).map(guard => (guard.pos, step(currentStore)))
-        )
+        .unfold(init = toStore)(store => store.getGuard.map(guard => (guard.pos, store.afterGuardStep)))
         .distinct
+        .length
 
   object Lab:
-    def parse(rows: List[String]): Option[Lab] = ??? // rows.map(_.toList)
+
+    def parse(rows: List[String]): Option[Lab] = for {
+      cells <- rows.traverse(_.toList.traverse(Cell.parse))
+      (guardPos, direction) <- findGuard(cells)
+    } yield Lab(cells, Guard(guardPos, direction))
+
+    def findGuard(cells: List[List[Cell]]): Option[(Pos, Direction)] =
+      cells
+        .map(_.zipWithIndex)
+        .zipWithIndex
+        .map((row, rowIndex) => row.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
+        .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => (pos, direction) })
