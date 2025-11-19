@@ -119,8 +119,6 @@ object Day06:
     } yield Lab(cells, Guard(guardPos, direction))
 
     def findGuard(cells: List[List[Cell]]): Option[(Pos, Direction)] =
-      cells
-        .map(_.zipWithIndex)
-        .zipWithIndex
-        .map((row, rowIndex) => row.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
+      cells.zipWithIndex
+        .map((row, rowIndex) => row.zipWithIndex.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
         .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => (pos, direction) })
