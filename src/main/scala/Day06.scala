@@ -107,10 +107,9 @@ object Day06:
       )
 
     def allDistinctGuardPositionsCount: Int =
-      List
+      Set
         .unfold(init = toStore)(store => store.getGuard.map(guard => (guard.pos, store.afterGuardStep)))
-        .distinct
-        .length
+        .size
 
   object Lab:
 
