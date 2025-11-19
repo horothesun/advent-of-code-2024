@@ -8,11 +8,11 @@ import munit.ScalaCheckSuite
 class Day06Suite extends ScalaCheckSuite:
 
   test("big input parsed to something"):
-    assert(Lab.parse(rows = bigInput).isDefined)
+    assert(Lab.parse(bigInput).isDefined)
 
   test("small input parsed correctly"):
     assertEquals(
-      Lab.parse(rows = smallInput),
+      Lab.parse(smallInput),
       Lab(
         cells = List(
           List(e, e, e, e, o, e, e, e, e, e),
@@ -25,9 +25,14 @@ class Day06Suite extends ScalaCheckSuite:
           List(e, e, e, e, e, e, e, e, o, e),
           List(o, e, e, e, e, e, e, e, e, e),
           List(e, e, e, e, e, e, o, e, e, e)
-        ),
-        Guard(Pos(row = 6, col = 4), Direction.Up)
+        )
       ).some
+    )
+
+  test("small input guard is at pos (6, 4) and facing up"):
+    assertEquals(
+      Lab.parse(smallInput).map(_.guard),
+      Guard(Pos(row = 6, col = 4), Direction.Up).some
     )
 
   test("guard will visit 41 distinct positions in small input lab"):

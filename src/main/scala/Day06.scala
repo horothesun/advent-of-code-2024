@@ -19,6 +19,9 @@ object Day06:
       case Down  => down
     }
 
+  object Pos:
+    val outOfBounds: Pos = Pos(row = -1, col = -1)
+
   enum Direction:
     case Left, Up, Right, Down
 
@@ -63,16 +66,14 @@ object Day06:
 
   type LabStore = Store[Pos, Option[(Tile, Guard)]]
 
-  val unguardedLabStore: LabStore = {
-    val outOfBoundsPos = Pos(row = -1, col = -1)
+  val unguardedLabStore: LabStore =
     Store(
       {
-        case Pos(row = 0, col = 0) => (Tile.Empty, Guard(outOfBoundsPos, Direction.Left)).some
+        case Pos(row = 0, col = 0) => (Tile.Empty, Guard.outOfBounds).some
         case _                     => None
       },
-      s = outOfBoundsPos
+      s = Pos.outOfBounds
     )
-  }
 
   extension (store: LabStore)
 
@@ -96,9 +97,18 @@ object Day06:
           case Tile.Obstruction => Guard(pos, direction.turnedRight)
         })
 
-  case class Lab(cells: List[List[Cell]], guard: Guard):
+  object Guard:
+    val outOfBounds: Guard = Guard(Pos.outOfBounds, Direction.Left)
+
+  case class Lab(cells: List[List[Cell]]):
 
     val toVectors: Vector[Vector[Cell]] = cells.map(_.toVector).toVector
+
+    val guard: Guard =
+      cells.zipWithIndex
+        .map((row, rowIndex) => row.zipWithIndex.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
+        .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => Guard(pos, direction) })
+        .getOrElse(Guard.outOfBounds)
 
     val toStore: LabStore =
       Store(
@@ -112,13 +122,4 @@ object Day06:
         .size
 
   object Lab:
-
-    def parse(rows: List[String]): Option[Lab] = for {
-      cells <- rows.traverse(_.toList.traverse(Cell.parse))
-      guard <- findGuard(cells)
-    } yield Lab(cells, guard)
-
-    def findGuard(cells: List[List[Cell]]): Option[Guard] =
-      cells.zipWithIndex
-        .map((row, rowIndex) => row.zipWithIndex.map((cell, colIndex) => (Pos(rowIndex, colIndex), cell)))
-        .collectFirstSome(_.collectFirst { case (pos, GuardCell(direction)) => Guard(pos, direction) })
+    def parse(rows: List[String]): Option[Lab] = rows.traverse(_.toList.traverse(Cell.parse)).map(Lab.apply)
